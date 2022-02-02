@@ -36,9 +36,11 @@ class EntityOut(BaseModel):
     profanity: str
     userID: str
 
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
-
-@app.post("/entities", response_model=EntityOut)
+@app.post("/profanities", response_model=EntityOut)
 def extract_entities(user_request: UserRequestIn):
     
     text = user_request.text
