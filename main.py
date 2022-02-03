@@ -24,8 +24,8 @@ def classify_sentence(sentence):
     output = model.generate(input_ids, attention_mask=attention_mask)
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-output = classify_sentence('This is a test')
-print(output)
+# output = classify_sentence('This is a test')
+# print(output)
 
 class UserRequestIn(BaseModel):
     text: str
