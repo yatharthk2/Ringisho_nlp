@@ -1,4 +1,4 @@
-
+# heroku logs --app profanityringisho --tail
 
 from copy import deepcopy
 from fastapi import FastAPI
