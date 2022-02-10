@@ -1,40 +1,44 @@
 # heroku logs --app profanityringisho --tail
-# uvicorn main:app --reload
+# uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 from copy import deepcopy
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
 from enum import Enum
 from transformers import AutoTokenizer, T5ForConditionalGeneration
-app = FastAPI()
+
 import uvicorn
+from profanity_check import predict, predict_prob
+
+app = FastAPI()
 
 
 
-ckpt = 'Narrativa/byt5-base-tweet-hate-detection'
 
-tokenizer = AutoTokenizer.from_pretrained(ckpt)
-model = T5ForConditionalGeneration.from_pretrained(ckpt).to('cpu')
+# ckpt = 'Narrativa/byt5-base-tweet-hate-detection'
 
-def classify_sentence(sentence):
+# tokenizer = AutoTokenizer.from_pretrained(ckpt)
+# model = T5ForConditionalGeneration.from_pretrained(ckpt).to('cpu')
+
+# def classify_sentence(sentence):
     
-    inputs = tokenizer([sentence], padding='max_length', truncation=True, max_length=512, return_tensors='pt')
-    input_ids = inputs.input_ids.to('cpu')
-    attention_mask = inputs.attention_mask.to('cpu')
-    output = model.generate(input_ids, attention_mask=attention_mask)
-    return tokenizer.decode(output[0], skip_special_tokens=True)
+#     inputs = tokenizer([sentence], padding='max_length', truncation=True, max_length=512, return_tensors='pt')
+#     input_ids = inputs.input_ids.to('cpu')
+#     attention_mask = inputs.attention_mask.to('cpu')
+#     output = model.generate(input_ids, attention_mask=attention_mask)
+#     return tokenizer.decode(output[0], skip_special_tokens=True)
 
 # output = classify_sentence('This is a test')
 # print(output)
 
 class UserRequestIn(BaseModel):
     text: str
-    userID: str
+    questionID: str
 
 
 class EntityOut(BaseModel):
     profanity: str
-    userID: str
+    questionID: str
 
 @app.get('/')
 async def root():
@@ -44,10 +48,14 @@ async def root():
 def extract_entities(user_request: UserRequestIn):
     
     text = user_request.text
-    userID = user_request.userID
-    output = classify_sentence(text)
+    questionID = user_request.questionID
+    result = predict([text])
+    if result[0] == 0:
+        output = "No profanity"
+    else:
+        output = "Profanity"
 
-    return {'profanity':output , 'userID':userID}
+    return {'profanity':output , 'questionID':questionID}
 
 
 if __name__ == '__main__':

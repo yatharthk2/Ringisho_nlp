@@ -6,3 +6,5 @@ gunicorn
 aiofiles==0.6.0
 python-multipart==0.0.5
 jinja2==2.11.2
+profanity_check
+Scikit-learn==0.20.4
