@@ -5,6 +5,5 @@ sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt -y upgrade
 sudo apt install python3.7
 python --version
-sudo apt install python3-pip
-sudo apt install python3-venv
-./setup_project.sh
+sudo apt -y install python3-pip
+sudo apt -y install python3-venv
