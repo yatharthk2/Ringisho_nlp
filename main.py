@@ -9,43 +9,30 @@ from transformers import AutoTokenizer, T5ForConditionalGeneration
 
 import uvicorn
 from profanity_check import predict, predict_prob
+import os
+import openai
 
 app = FastAPI()
-
-
-
-
-# ckpt = 'Narrativa/byt5-base-tweet-hate-detection'
-
-# tokenizer = AutoTokenizer.from_pretrained(ckpt)
-# model = T5ForConditionalGeneration.from_pretrained(ckpt).to('cpu')
-
-# def classify_sentence(sentence):
-    
-#     inputs = tokenizer([sentence], padding='max_length', truncation=True, max_length=512, return_tensors='pt')
-#     input_ids = inputs.input_ids.to('cpu')
-#     attention_mask = inputs.attention_mask.to('cpu')
-#     output = model.generate(input_ids, attention_mask=attention_mask)
-#     return tokenizer.decode(output[0], skip_special_tokens=True)
-
-# output = classify_sentence('This is a test')
-# print(output)
 
 class UserRequestIn(BaseModel):
     text: str
     questionID: str
 
 
-class EntityOut(BaseModel):
+class profanity(BaseModel):
     profanity: str
+    questionID: str
+
+class essay(BaseModel):
+    essay: str
     questionID: str
 
 @app.get('/')
 async def root():
     return {'message': 'Hello World'}
 
-@app.post('/profanities', response_model=EntityOut)
-def extract_entities(user_request: UserRequestIn):
+@app.post('/profanities', response_model=profanity)
+def infer_profanity(user_request: UserRequestIn):
     
     text = user_request.text
     questionID = user_request.questionID
@@ -57,18 +44,30 @@ def extract_entities(user_request: UserRequestIn):
 
     return {'profanity':output , 'questionID':questionID}
 
+@app.post('/essay', response_model=essay)
+def infer_essay(user_request: UserRequestIn):
+    
+    text = user_request.text
+    questionID = user_request.questionID
+    openai.api_key = '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'
+
+    response = openai.Completion.create(
+        engine="text-davinci-001",
+        prompt=text,
+        temperature=0,
+        max_tokens=64,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+)
+
+    return {'essay':response , 'questionID':questionID}
+
+
 
 if __name__ == '__main__':
     uvicorn.run(app, host='127.0.0.1', port=5049)
 
-# from fastapi import FastAPI
-
-# app = FastAPI()
-
-
-# @app.get('/')
-# async def root():
-#     return {'message': 'Hello World'}
 
 
 
