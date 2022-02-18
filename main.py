@@ -6,30 +6,24 @@ from pydantic import BaseModel
 from typing import List
 from enum import Enum
 from transformers import AutoTokenizer, T5ForConditionalGeneration
-
 import uvicorn
 from profanity_check import predict, predict_prob
 import os
 import openai
 
+from response_model_class import UserRequestIn, profanity, essay , Info
+from Unsplash import unsplash
+
+
+
+
 app = FastAPI()
 
-class UserRequestIn(BaseModel):
-    text: str
-    questionID: str
 
-
-class profanity(BaseModel):
-    profanity: str
-    questionID: str
-
-class essay(BaseModel):
-    essay: str
-    questionID: str
 
 @app.get('/')
 async def root():
-    return {'message': 'Hello World'}
+    return {'welcome to ringisho_AI'}
 
 @app.post('/profanities', response_model=profanity)
 def infer_profanity(user_request: UserRequestIn):
@@ -62,6 +56,20 @@ def infer_essay(user_request: UserRequestIn):
 )
 
     return {'essay':response , 'questionID':questionID}
+
+@app.post("/image")
+def read_root(info : Info):
+
+    best_photo_id = unsplash().doStuff(info.question)
+
+    photo_image_url_1 = "https://unsplash.com/photos/"
+    photo_image_url_2 = "/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjQ0ODE4NTk4&force=true"
+
+    return {
+        
+        "url" : photo_image_url_1 + best_photo_id[0] + photo_image_url_2,
+        'questionID':info.question_id
+    }
 
 
 
