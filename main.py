@@ -43,19 +43,19 @@ def infer_essay(user_request: UserRequestIn):
     
     text = user_request.text
     questionID = user_request.questionID
-    openai.api_key = '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'
+    openai.api_key = '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'
 
     response = openai.Completion.create(
         engine="text-davinci-001",
-        prompt=text,
+        prompt="Create an outline for an essay about " + text + " :\n\nI:",
         temperature=0,
         max_tokens=64,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-)
+        top_p=1.0,
+        frequency_penalty=0.0,
+        presence_penalty=0.0
+    )
 
-    return {'essay':response , 'questionID':questionID}
+    return {'essay':response.choices[0].text , 'questionID':questionID}
 
 @app.post("/image")
 def read_root(info : Info):
@@ -63,7 +63,7 @@ def read_root(info : Info):
     best_photo_id = unsplash().doStuff(info.question)
 
     photo_image_url_1 = "https://unsplash.com/photos/"
-    photo_image_url_2 = "/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjQ0ODE4NTk4&force=true"
+    photo_image_url_2 = "/download?w=320"
 
     return {
         

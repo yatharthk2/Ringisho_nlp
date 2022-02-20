@@ -6,4 +6,4 @@ sudo apt -y upgrade
 sudo apt install python3.7
 python --version
 sudo apt -y install python3-pip
-sudo apt -y install python3-venv
+sudo apt-get -y install python-virtualenv
