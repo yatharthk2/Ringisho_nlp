@@ -18,6 +18,15 @@ class unsplash():
     def __init__(self):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model, self.preprocess = clip.load("ViT-B/32", device=self.device)
+        self.photo_ids = pd.read_csv("unsplash-dataset/photo_ids.csv")
+        self.photo_ids = list(self.photo_ids['photo_id'])
+
+        # Load the features vectors
+        self.photo_features = np.load("unsplash-dataset/features.npy")
+        if self.device == "cpu":
+            self.photo_features = torch.from_numpy(self.photo_features).float().to(self.device)
+        else:
+            self.photo_features = torch.from_numpy(self.photo_features).to(self.device)        
 
 
     def encode_search_query(self , search_query):
@@ -69,24 +78,24 @@ class unsplash():
 
     def doStuff(self , search_query):
 
-        photo_ids = pd.read_csv("unsplash-dataset/photo_ids.csv")
-        photo_ids = list(photo_ids['photo_id'])
+        # photo_ids = pd.read_csv("unsplash-dataset/photo_ids.csv")
+        # photo_ids = list(photo_ids['photo_id'])
 
-        # Load the features vectors
-        photo_features = np.load("unsplash-dataset/features.npy")
+        # # Load the features vectors
+        # photo_features = np.load("unsplash-dataset/features.npy")
 
         # Convert features to Tensors: Float32 on CPU and Float16 on GPU
-        if self.device == "cpu":
-            photo_features = torch.from_numpy(photo_features).float().to(self.device)
-        else:
-            photo_features = torch.from_numpy(photo_features).to(self.device)
+        # if self.device == "cpu":
+        #     photo_features = torch.from_numpy(photo_features).float().to(self.device)
+        # else:
+        #     photo_features = torch.from_numpy(photo_features).to(self.device)
 
         # Print some statistics
-        print(f"Photos loaded: {len(photo_ids)}")
+        print(f"Photos loaded: {len(self.photo_ids)}")
 
         #search_query = "should i buy the iphone 13 or pixel 6"
 
-        result = self.search_unsplash(search_query, photo_features, photo_ids, 1)
+        result = self.search_unsplash(search_query, self.photo_features, self.photo_ids, 1)
 
         return result
 
