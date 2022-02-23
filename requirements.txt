@@ -9,3 +9,4 @@ jinja2==2.11.2
 profanity_check
 Scikit-learn==0.20.4
 openai
+python-decouple

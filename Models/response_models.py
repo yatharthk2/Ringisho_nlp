@@ -6,11 +6,11 @@ class UserRequestIn(BaseModel):
     questionID: str
 
 
-class profanity(BaseModel):
+class Profanity(BaseModel):
     profanity: str
     questionID: str
 
-class essay(BaseModel):
+class Essay(BaseModel):
     essay: str
     questionID: str
 
